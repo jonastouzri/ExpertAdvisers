@@ -8,9 +8,10 @@
 #property version   "1.00"
 
 #include <Trade/Trade.mqh>
-#include <MyFiles/Util.mqh>
+
 #include <MyFiles/PositionHandler.mqh>
 #include <MyFiles/PositionHandlerV2.mqh>
+//#include <MyFiles/Util.mqh>
 
 //CTrade trade;
 
@@ -25,14 +26,15 @@ int atrHandle;
 
 
 
+double risk = 1;   // %
+double  rrr = 2;   // %
+double  tgr = 1;   // %     
 
 
 
 
-PositionHandler phr;
 
-
-PositionHandler phrV2;
+PositionHandlerV2 phr(risk, rrr);
 
 
 
@@ -68,41 +70,7 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   //updatePosition();
 
-
-  // todos:
-  // add spread filter to stay out of trade if spreadis too high
-  // minimum steigung von ma200
-  // test different candles lookback -> smaller than 10
-  // use an atr volatility min value to enter trades -> 0,0004
-  // find out how to determine a trend
-  
-  // use atr to device wether to enter a trade or not
-  // use atr to determine risk to take -> low atr -> lower risk = 0.5 %
-  // use atr to determin stop loss -> buy: openprice[0]- atr[0]
-  
-   
-   
-   
-   
-   
-
-   
-   
-   
-   
-   
-     
-   
-   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-   /*
-   int barsCount = iBars(_Symbol, PERIOD_CURRENT);  
-   if(barsCount == barsTotal)
-      return; 
-   barsTotal = barsCount;
-   */
    if(!Util::isNewBar(barsTotal))
       return;
 
@@ -120,12 +88,6 @@ void OnTick()
    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
    // fill mA bufefr
    
-   MqlRates price[];
-   ArraySetAsSeries(price, true); // required??
-   int data = CopyRates(_Symbol,_Period, 0, 2, price);
-      
-   
-   
    double ma[];
    ArraySetAsSeries(ma, true);
    CopyBuffer(ma200Handle, 0, 0, 2, ma);
@@ -142,45 +104,35 @@ void OnTick()
    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
    // 
 
-   phr.updatePositions();
-   phr.printMeasures();
+   //phr.updateLongPosition();
+   //phr.updateShortPosition();
+   
+   //phr.printMeasures();
 
    //drawPositionOpenCloseLines();
    
 
 
-   
+   MqlRates prices = Util::getPriceInformation(2, 1);  
+   double currentPrice = prices.close;
 
 
-
+  
    
-   
-   
-   
-   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-   // return if open positions
-   //if(PositionsTotal() > 0)
-   //   return;
-      
-   double risk = 1;   // %
-   double  rrr = 2;   // %
-   double  tgr = 1;   // %     
-   
-   const double MINATR = 50*_Point;
    
    bool longCondition = macd[1] > signal[1] && 
                         macd[0] < signal[0] && 
                         //macd[1] < 0 && 
                         PositionsTotal() == 0 &&
-                        price[1].close > ma[1];
-                        // && atr[1] >= MINATR; //phr.getMinSlPoints();  // volatility 
+                        currentPrice > ma[1];
+
                         
    bool shortCondition = macd[1] < signal[1] && 
                         macd[0] > signal[0] && 
                         //macd[1] > 0 && 
                         PositionsTotal() == 0 &&
-                        price[1].close < ma[1];
-                        //&& atr[1] >= MINATR; //phr.getMinSlPoints();  // volatility    
+                        currentPrice < ma[1];
+
       
       
    if(!isTradingTime())
@@ -189,17 +141,17 @@ void OnTick()
       
    // buy condition
    if(longCondition){
-      
-      if(!phr.goLong(risk, rrr, tgr))
-         Print("Error going long");
-      phr.printMeasures();
+      //Print("============================================> LONG");
+      if(phr.openLongPosition())
+         Print("============================================> LONG = ", TimeCurrent());
+      //phr.printMeasures();
       
    // sell condition
    }else if(shortCondition){
-  
-      if(!phr.goShort(risk, rrr, tgr))
+      Print("============================================> SHORT = ", TimeCurrent());
+      if(!phr.openShortPosition())
          Print("Error going short");
-      phr.printMeasures();
+      //phr.printMeasures();
 
       
       
