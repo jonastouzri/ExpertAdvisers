@@ -26,14 +26,14 @@
 // #import
 //+------------------------------------------------------------------+
 
-class Util{
+struct Util{
 
    static MqlRates
-   getCandlePriceInformation(uint lookBackCandles, uint candleIndex){
+   getPriceInformation(uint lookBack, uint index){
       MqlRates priceInfo[];
       ArraySetAsSeries(priceInfo, true);
-      int data = CopyRates(_Symbol, _Period, 0, lookBackCandles, priceInfo);
-      return priceInfo[candleIndex];
+      int data = CopyRates(_Symbol, _Period, 0, lookBack, priceInfo);
+      return priceInfo[index];
    }
    //+++++++++++++++++++++++++++++++++++++
 
@@ -59,6 +59,35 @@ class Util{
    getAskPrice(){
       return SymbolInfoDouble(_Symbol, SYMBOL_ASK);    
    }
+   
 
+   //+++++++++++++++++++++++++++++++++++++
+   static bool
+   isLongPosition(ulong position){
+      if(!PositionSelectByTicket(position)){
+         Print(__FUNCTION__, "FAILED TO SELECT POSITION");
+         return false;
+      }
+         
+      if(!(bool) PositionGetInteger(POSITION_TYPE))
+         return true;
+      return false;     
+      // long -> 0
+      // sell -> 1
+   }
+   //+++++++++++++++++++++++++++++++++++++
+   static bool
+   isShortPosition(ulong position){
+      if(!PositionSelectByTicket(position)){
+         Print(__FUNCTION__, "FAILED TO SELECT POSITION");
+         return false;
+      }
+         
+      if((bool) PositionGetInteger(POSITION_TYPE))
+         return true;
+      return false;     
+      // long -> 0
+      // sell -> 1
+   }
 
 };
