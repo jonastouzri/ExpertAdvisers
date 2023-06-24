@@ -25,3 +25,40 @@
 //   string ErrorDescription(int error_code);
 // #import
 //+------------------------------------------------------------------+
+
+class Util{
+
+   static MqlRates
+   getCandlePriceInformation(uint lookBackCandles, uint candleIndex){
+      MqlRates priceInfo[];
+      ArraySetAsSeries(priceInfo, true);
+      int data = CopyRates(_Symbol, _Period, 0, lookBackCandles, priceInfo);
+      return priceInfo[candleIndex];
+   }
+   //+++++++++++++++++++++++++++++++++++++
+
+   static double
+   getAtr(ulong lookBack, ulong index){
+      int atrHandle = iATR(_Symbol,_Period, 14);
+      double atr[];
+      ArraySetAsSeries(atr, true);
+      CopyBuffer(atrHandle, 0 ,0, (int)lookBack, atr);
+      return atr[index];
+   }
+   //+++++++++++++++++++++++++++++++++++++
+
+   // price when selling
+   static double 
+   getBidPrice(){
+      return SymbolInfoDouble(_Symbol, SYMBOL_BID);    
+   }
+
+   //+++++++++++++++++++++++++++++++++++++
+   // price when buying
+   static double 
+   getAskPrice(){
+      return SymbolInfoDouble(_Symbol, SYMBOL_ASK);    
+   }
+
+
+};

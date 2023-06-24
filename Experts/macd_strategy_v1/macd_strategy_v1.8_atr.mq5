@@ -10,6 +10,7 @@
 #include <Trade/Trade.mqh>
 #include <MyFiles/Util.mqh>
 #include <MyFiles/PositionHandler.mqh>
+#include <MyFiles/PositionHandlerV2.mqh>
 
 CTrade trade;
 
