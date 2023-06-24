@@ -12,7 +12,7 @@
 #include <MyFiles/PositionHandler.mqh>
 #include <MyFiles/PositionHandlerV2.mqh>
 
-CTrade trade;
+//CTrade trade;
 
 
 int barsTotal;
@@ -32,7 +32,7 @@ int atrHandle;
 PositionHandler phr;
 
 
-
+PositionHandler phrV2;
 
 
 
@@ -97,11 +97,14 @@ void OnTick()
    
    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+   /*
    int barsCount = iBars(_Symbol, PERIOD_CURRENT);  
    if(barsCount == barsTotal)
       return; 
    barsTotal = barsCount;
+   */
+   if(!Util::isNewBar(barsTotal))
+      return;
 
 
    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

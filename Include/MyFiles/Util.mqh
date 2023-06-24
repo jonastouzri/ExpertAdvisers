@@ -28,6 +28,16 @@
 
 struct Util{
 
+   static bool
+   isNewBar(int& barsTotal){
+      int barsCount = iBars(_Symbol, PERIOD_CURRENT);  
+      if(barsCount == barsTotal)
+         return false; 
+      barsTotal = barsCount;
+      return true;
+   }
+   //+++++++++++++++++++++++++++++++++++++
+
    static MqlRates
    getPriceInformation(uint lookBack, uint index){
       MqlRates priceInfo[];
