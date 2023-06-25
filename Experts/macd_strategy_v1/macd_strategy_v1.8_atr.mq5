@@ -20,7 +20,7 @@ int barsTotal;
 int macdHandle;
 int devHandle;
 int momHandle;
-int ma200Handle;
+int ma200Handle, ma7Handle;
 int ma200Handle2;
 int atrHandle;
 
@@ -48,7 +48,7 @@ int OnInit()
    //devHandle = iStdDev(_Symbol,_Period,20,0,MODE_SMA, PRICE_CLOSE);
    //momHandle = iMomentum(_Symbol,PERIOD_CURRENT, 14, PRICE_CLOSE);
    ma200Handle = iMA(_Symbol,_Period,200, 0,MODE_SMA, PRICE_CLOSE);
-   //ma200Handle2 = iMA(_Symbol,_Period,200, 0,MODE_SMMA, PRICE_CLOSE);
+   ma7Handle = iMA(_Symbol,_Period,7, 0,MODE_SMMA, PRICE_CLOSE);
    
    atrHandle = iATR(_Symbol,_Period, 14);
    
@@ -104,8 +104,8 @@ void OnTick()
    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
    // 
 
-   //phr.updateLongPosition();
-   //phr.updateShortPosition();
+   phr.updateLongPosition();
+   phr.updateShortPosition();
    
    //phr.printMeasures();
 
