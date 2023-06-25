@@ -16,6 +16,16 @@
 //CTrade trade;
 
 
+
+
+// todo:
+// go to breakeven when triggerratio is 0.25
+//
+
+
+
+
+
 int barsTotal;
 int macdHandle;
 int devHandle;
