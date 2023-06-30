@@ -34,7 +34,7 @@ class HedgePositionHandler{
 
    double RISK;
    double RRR;
-   ulong LOOKBACK;
+   uint LOOKBACK;
 
    bool isOpen;   
    ulong buyTicket;
@@ -45,7 +45,7 @@ class HedgePositionHandler{
    
    CTrade trade;
    
-   
+public:
    
    HedgePositionHandler(double RISK_, double RRR_){
    
@@ -63,19 +63,19 @@ class HedgePositionHandler{
          return false;
    
       double slPoints = Util::getAtr(LOOKBACK, 0)*3;  // rule to determine sl
-      Util::initLongPosition(slPoints, RRR, RISK, bp);
-      Util::initShortPosition(slPoints, RRR, RISK, sp);
+      Util::initLongPosition(slPoints, RISK, RRR, bp);
+      Util::initShortPosition(slPoints, RISK, RRR, sp);
       
       
       if(trade.Buy(bp.lotSize, Symbol(), bp.openPrice, bp.slPrice, bp.tpPrice)){
-         bp.orderId = trade.ResultOrder();
+         //bp.orderId = trade.ResultOrder();
          bp.openTime = TimeCurrent();
       }
       
          
     
-      if(trade.Sell(sp.lotSize, Symbol(), bp.openPrice, bp.slPrice, bp.tpPrice)){
-         sp.orderId = trade.ResultOrder();
+      if(trade.Sell(sp.lotSize, Symbol(), sp.openPrice, sp.slPrice, sp.tpPrice)){
+         //sp.orderId = trade.ResultOrder();
          sp.openTime = TimeCurrent();
       }
       
@@ -123,26 +123,62 @@ class HedgePositionHandler{
    bool
    modifyPosition(){
    
+      if(PositionsTotal() == 0)
+         return false;
+   
       MqlRates prices = Util::getPriceInformation(LOOKBACK, 0);
       double currentPrice = prices.close;
       double currentSpread = prices.spread;
       
+      
+      
       // MODIFY BUY POSITION
-      if(currentPrice > bp.openPrice + bp.slPoints){
+      if(currentPrice > bp.tgrPrice){
+      
+         Print(ARROW, "BUY POSITION MUST BE MODIFIED AT ", TimeCurrent());
+         
+         //double step = Util::getAtr(LOOKBACK, 1)*3;
+         
+         double step = bp.slPoints; //Util::getAtr(LOOKBACK, 1);
+         
+         
+
+         
+                  
+         bp.slPrice = bp.slPrice+step;
+         bp.tpPrice = bp.tpPrice+step;
+         bp.tgrPrice = bp.tgrPrice+step;
+         
       
          ulong ticket;
          if(getPositionTicket(POSITION_TYPE_BUY, ticket)){
-            if(trade.PositionModify(ticket, bp.openPrice + bp.slPoints, bp.tpPrice+bp.slPoints))
+            if(trade.PositionModify(ticket, bp.slPrice, bp.tpPrice))
                Print(ARROW, "BUY POSITION MODIFIED AT ", TimeCurrent());
          }
       }
       
       // MODIFY SELL POSITION
-      if(currentPrice < bp.openPrice - bp.slPoints){
+      if(currentPrice < sp.tgrPrice){
+      
+         Print(ARROW, "SELL POSITION MUST BE MODIFIED AT ", TimeCurrent());
+         
+         
+         
+         double step =bp.slPoints; //Util::getAtr(LOOKBACK, 1);
+        
+         //bp.slPrice = bp.slPrice-bp.slPoints;
+         //bp.tpPrice = bp.tpPrice-bp.slPoints;
+         
+                  
+         sp.slPrice = sp.slPrice-step;
+         sp.tpPrice = sp.tpPrice-step;
+         sp.tgrPrice = sp.tgrPrice-step;
+         
       
          ulong ticket;
          if(getPositionTicket(POSITION_TYPE_SELL, ticket)){
-            if(trade.PositionModify(ticket, bp.openPrice + bp.slPoints, bp.tpPrice+bp.slPoints))
+            if(trade.PositionModify(ticket, sp.slPrice, sp.tpPrice))
+            //if(trade.PositionModify(ticket, 0.65100, 0.64830))
                Print(ARROW, "BUY POSITION MODIFIED AT ", TimeCurrent());
          }
       }

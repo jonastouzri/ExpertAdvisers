@@ -35,9 +35,10 @@ struct position_t{
    double tpPrice;
    double lotSize;
    double slPoints;
-   //
-   ulong orderId; // from trade.ResultOrder()
+   double tgrPrice;   
+
    datetime openTime;
+
 
 
 };
@@ -168,36 +169,39 @@ struct Util{
    
    
    static double 
-   getLotSize(double slPoints, double RISK){      
+   getLotSize(double slPoints, double RISK_){      
       double equity = AccountInfoDouble(ACCOUNT_EQUITY);
-      double moneyAtRisk = equity*RISK/100;
+      double moneyAtRisk = equity*RISK_/100;
       double posSize = moneyAtRisk/slPoints;              // 10 euro / 5pip(50points) = 10/0,0005 = 20000
       return posSize/(1/Point());                        // LOT // 20000/100000 = 0.2
 
    }
    //++++++++++++++++++++++++++++++++++++
-   
+    
    
    static void
-   initLongPosition(double slPoints, double RRR, double RISK, position_t& pos){          
+   initLongPosition(double slPoints, double RISK_,double RRR_,  position_t& pos){          
       double openPrice = NormalizeDouble(getAskPrice(), _Digits);
       double slPrice = NormalizeDouble(openPrice - slPoints, _Digits);
-      double tpPrice = NormalizeDouble(openPrice + slPoints*RRR, _Digits); 
-      double lotSize = NormalizeDouble(getLotSize(slPoints, RISK), 2);   
+      double tpPrice = NormalizeDouble(openPrice + slPoints*RRR_, _Digits); 
+      double lotSize = NormalizeDouble(getLotSize(slPoints, RISK_), 2);   
+      double tgrPrice = NormalizeDouble(openPrice + slPoints, _Digits); 
  
-      position_t _pos{openPrice, slPrice, tpPrice, lotSize, slPoints, 0};
+      position_t _pos{openPrice, slPrice, tpPrice, lotSize, slPoints, tgrPrice};
       pos = _pos;
                    
    }
    //+++++++++++++++++++++++++++++++++++++
    
    static void
-   initShortPosition(double slPoints, double RISK, double RRR, position_t& pos){          
+   initShortPosition(double slPoints, double RISK_, double RRR_, position_t& pos){          
       double openPrice = NormalizeDouble(getBidPrice(), _Digits);
       double slPrice = NormalizeDouble(openPrice + slPoints, _Digits);
-      double tpPrice = NormalizeDouble(openPrice - slPoints*RRR, _Digits); 
-      double lotSize = NormalizeDouble(getLotSize(slPoints, RISK), 2);         
-      position_t _pos{openPrice, slPrice, tpPrice, lotSize, slPoints, 0};
+      double tpPrice = NormalizeDouble(openPrice - slPoints*RRR_, _Digits); 
+      double lotSize = NormalizeDouble(getLotSize(slPoints, RISK_), 2);  
+      double tgrPrice = NormalizeDouble(openPrice - slPoints, _Digits); 
+             
+      position_t _pos{openPrice, slPrice, tpPrice, lotSize, slPoints, tgrPrice};
       pos = _pos;
              
    }

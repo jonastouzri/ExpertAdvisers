@@ -9,6 +9,7 @@
 
 
 #include <MyFiles/PositionHandlerV2.mqh>
+#include <MyFiles/HedgePositionHandler.mqh>
 #include <MyFiles/Util.mqh>
 #include <Trade/Trade.mqh>
 
@@ -22,6 +23,11 @@ int ATR;
 const ulong LOOKBACK=10;
 
 CTrade trade;
+
+double RISK=1;
+double RRR=2;
+
+HedgePositionHandler ph(RISK, RRR);
 
 ulong buyTicket=0, sellTicket=0;
 
@@ -79,23 +85,9 @@ void OnTick()
    // if one sl gets hit adapt the others position sl to breakeven + spread btw. sl of closed position
                 
                         
-   if(buyTicket != 0){           
-      ulong ticket = PositionGetTicket(PositionsTotal()-1);
-      
-      
-      
-      if(PositionSelectByTicket(ticket)){
-         ulong  type =PositionGetInteger(POSITION_TYPE);
-         ulong  magic =PositionGetInteger(POSITION_MAGIC);
-         Print("=============================> TYPE BUY ", type, "  ", magic);
-      }
-      
-          
-      Print("=============================> POSITIONS TOTAL ", PositionsTotal());
-      if(!trade.PositionModify(ticket, 0.64780,0.65300)){
-         Print("=============================> UPDATED BUY ", TimeCurrent(), "   ", trade.ResultOrder(), "   ", buyTicket);
-      }
-   }
+                        
+      ph.modifyPosition();
+
 
 
 
@@ -104,36 +96,14 @@ void OnTick()
     if(!longCondition)
       return;
       
-      
-   double atr = Util::getAtr(LOOKBACK, 0)*3;
-
-    
-   double rrr =1.5;
-   double lotSize = 0.1;
-   double slPoints = atr;//Point()*100; // 10 pip
-   double openPrice = Util::getAskPrice();
-   double slPriceBuy = openPrice - slPoints;
-   double tpPriceBuy = openPrice + rrr*slPoints;
-   double slPriceSell = openPrice + slPoints;
-   double tpPriceSell = openPrice - rrr*slPoints;
-   
-   if(trade.Buy(lotSize, Symbol(), Util::getAskPrice(),slPriceBuy, tpPriceBuy)){
-      buyTicket = trade.ResultOrder();
-      Print("=============================> OPENED BUY ", TimeCurrent(), "   ", trade.ResultOrder());
+      ph.openPosition();
       
       
       
-   }
-   /*     
-   if(trade.Sell(lotSize, Symbol(), Util::getBidPrice(),slPriceSell, tpPriceSell)){
-      Print("=============================> OPENED SELL ", TimeCurrent(), "   ", trade.ResultOrder());
-      sellTicket = trade.ResultOrder();
-      
-   }
-   */
      
-   
     
+      
+
 
    
  
