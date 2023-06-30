@@ -85,7 +85,7 @@ void OnTick()
    // if one sl gets hit adapt the others position sl to breakeven + spread btw. sl of closed position
                 
                         
-                        
+      //todo: on each tick          
       ph.modifyPosition();
 
 

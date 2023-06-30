@@ -127,57 +127,70 @@ public:
          return false;
    
       MqlRates prices = Util::getPriceInformation(LOOKBACK, 0);
-      double currentPrice = prices.close;
+      double currentPriceBuy = prices.high;
+      double currentPriceSell= prices.low;
       double currentSpread = prices.spread;
+      
+      // todo:
+      // use open price of last candle as new sl price
       
       
       
       // MODIFY BUY POSITION
-      if(currentPrice > bp.tgrPrice){
+      if(currentPriceBuy > bp.tgrPrice){
       
          Print(ARROW, "BUY POSITION MUST BE MODIFIED AT ", TimeCurrent());
          
          //double step = Util::getAtr(LOOKBACK, 1)*3;
          
-         double step = bp.slPoints; //Util::getAtr(LOOKBACK, 1);
+         double step = bp.slPoints*1.5; //Util::getAtr(LOOKBACK, 1);
          
          
 
          
-                  
+         /*          
          bp.slPrice = bp.slPrice+step;
          bp.tpPrice = bp.tpPrice+step;
          bp.tgrPrice = bp.tgrPrice+step;
+         */
+         
+                           
+         double slPrice = bp.slPrice+step;
+         double tpPrice = bp.tpPrice+step;
+         //double tgrPrice = bp.tgrPrice+step;
          
       
          ulong ticket;
          if(getPositionTicket(POSITION_TYPE_BUY, ticket)){
-            if(trade.PositionModify(ticket, bp.slPrice, bp.tpPrice))
+            if(trade.PositionModify(ticket, slPrice, tpPrice))
                Print(ARROW, "BUY POSITION MODIFIED AT ", TimeCurrent());
          }
       }
       
       // MODIFY SELL POSITION
-      if(currentPrice < sp.tgrPrice){
+      if(currentPriceSell < sp.tgrPrice){
       
          Print(ARROW, "SELL POSITION MUST BE MODIFIED AT ", TimeCurrent());
          
          
          
-         double step =bp.slPoints; //Util::getAtr(LOOKBACK, 1);
+         double step =sp.slPoints*1.5; //Util::getAtr(LOOKBACK, 1);
         
          //bp.slPrice = bp.slPrice-bp.slPoints;
          //bp.tpPrice = bp.tpPrice-bp.slPoints;
          
-                  
+         /*         
          sp.slPrice = sp.slPrice-step;
          sp.tpPrice = sp.tpPrice-step;
          sp.tgrPrice = sp.tgrPrice-step;
+         */
          
+         double slPrice = bp.slPrice-step;
+         double tpPrice = bp.tpPrice-step;
       
          ulong ticket;
          if(getPositionTicket(POSITION_TYPE_SELL, ticket)){
-            if(trade.PositionModify(ticket, sp.slPrice, sp.tpPrice))
+            if(trade.PositionModify(ticket, slPrice, tpPrice))
             //if(trade.PositionModify(ticket, 0.65100, 0.64830))
                Print(ARROW, "BUY POSITION MODIFIED AT ", TimeCurrent());
          }
