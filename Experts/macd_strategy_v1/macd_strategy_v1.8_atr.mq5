@@ -90,21 +90,21 @@ void OnTick()
    
    // copies the last two values, starting with last completed bar [1]
    double macd[];
-   CopyBuffer(macdHandle, MAIN_LINE, 1,2, macd); // stores only 2 items
+   CopyBuffer(macdHandle, MAIN_LINE, 1,3, macd); // stores only 2 items
 
    double signal[];
-   CopyBuffer(macdHandle, SIGNAL_LINE, 1,2, signal);
+   CopyBuffer(macdHandle, SIGNAL_LINE, 1,3, signal);
    
    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
    // fill mA bufefr
    
    double ma[];
    ArraySetAsSeries(ma, true);
-   CopyBuffer(ma200Handle, 0, 0, 2, ma);
+   CopyBuffer(ma200Handle, 0, 0, 3, ma);
    
    double atr[];
    ArraySetAsSeries(atr, true);
-   CopyBuffer(atrHandle, 0 ,0, 2, atr);
+   CopyBuffer(atrHandle, 0 ,0, 3, atr);
 
 
 
@@ -133,15 +133,19 @@ void OnTick()
    bool longCondition = macd[1] > signal[1] && 
                         macd[0] < signal[0] && 
                         //macd[1] < 0 && 
-                        PositionsTotal() == 0 &&
-                        currentPrice > ma[1];
+                        ma[0] > ma[1]  &&
+                        
+                        
+                        PositionsTotal() == 0;// &&
+                       //currentPrice > ma[1];
 
                         
    bool shortCondition = macd[1] < signal[1] && 
                         macd[0] > signal[0] && 
                         //macd[1] > 0 && 
-                        PositionsTotal() == 0 &&
-                        currentPrice < ma[1];
+                        ma[0] < ma[1] &&
+                        PositionsTotal() == 0;// &&
+                        //currentPrice < ma[1];
 
       
       
