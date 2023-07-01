@@ -270,28 +270,33 @@ public:
    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
    
    
-   static bool 
-   recursivePositionCall(position_t& buy, position_t& sell, double lotSize, uint iteration){
+   bool 
+   recursivePositionCall(position_t& buy, position_t& sell, double lotSize, double lotSizeStep,  uint iteration){
    
-      if(trade.Buy(buy.lotSize, Symbol(), buy.openPrice, buy.slPrice, buy.tpPrice)){
+      if(trade.BuyLimit(lotSize, buy.openPrice, Symbol(), buy.slPrice, buy.tpPrice,0,0,NULL)){
+         buy.lotSize = lotSize;
          buy.openTime = TimeCurrent();
-         
+        
          Print(ARROW, "OPENED BUY POSITION");
       
 
-            
-            
-      
-         if(trade.SellStop(sp.lotSize, sp.openPrice, Symbol(), sp.slPrice, sp.tpPrice,0,0, NULL)){
+         double lotSizeSell = lotSizeStep+lotSizeStep;
+         if(trade.SellStop(lotSizeSell, sell.openPrice, Symbol(), sell.slPrice, sell.tpPrice, 0, 0, NULL)){
             Print(ARROW, "OPENED SELL STOP POSITION");
-            sp.openTime = TimeCurrent();
+            sell.lotSize = lotSizeSell;
+            sell.openTime = TimeCurrent();
+            
+            
+            
+            
+            return recursivePositionCall(buy, sell, lotSize,lotSizeStep, iteration++);
          }
       }
    
    
    
    
-   
+      return true;  
    
    }
    
