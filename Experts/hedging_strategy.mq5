@@ -86,17 +86,20 @@ void OnTick()
                 
                         
       //todo: on each tick          
-      ph.modifyPosition();
+      //ph.modifyPosition();
 
 
 
 
    //===================================================================
+   
+   if(!Util::isTradingTime("06:00", "18:00"))
+      return;
 
     if(!longCondition)
       return;
       
-      ph.openPosition();
+      ph.openPositionV2();
       
       
       

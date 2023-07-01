@@ -72,18 +72,18 @@ public:
          bp.openTime = TimeCurrent();
       }
       
-    
+      /*
       if(trade.Sell(sp.lotSize, Symbol(), sp.openPrice, sp.slPrice, sp.tpPrice)){
          //sp.orderId = trade.ResultOrder();
          sp.openTime = TimeCurrent();
       }
+      */
       
       
    
    
       return true;  
    }
-   
    
    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
    // return ticket of current open buy or sell position
@@ -198,7 +198,106 @@ public:
    
       return true;
    }
+   
+      
+   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   
+      bool
+   openPositionV2(){
+   
+      if(PositionsTotal() > 0)
+         return false;
+         
+         
+         
 
+      double lotSize = 0.1;
+      double openPrice = Util::getAskPrice();
+      double slPoints = NormalizeDouble(Util::getAtr(LOOKBACK, 1)*10, Digits());
+      double slPrice = openPrice - slPoints;
+      double tpPrice = openPrice + slPoints;
+      double tgrPrice = NormalizeDouble(openPrice - slPoints/3, Digits());
+      
+      Print("tgrPrice = ", tgrPrice, ",  slPrice = ", slPrice, ",  tpPrice = ", tpPrice);
+      
+      
+      position_t pos = {
+         openPrice,
+         slPrice,
+         tpPrice,
+         lotSize,
+         slPoints,
+         tgrPrice,
+         0
+      };
+      
+      bp = pos;
+      
+      
+      //---------------------------------------------------------------------
+
+
+      if(trade.Buy(bp.lotSize, Symbol(), bp.openPrice, bp.slPrice, bp.tpPrice)){
+         bp.openTime = TimeCurrent();
+         
+         Print(ARROW, "OPENED BUY POSITION");
+      
+            position_t sell {
+               bp.tgrPrice,
+               bp.tpPrice,
+               bp.slPrice,
+               0.15,
+               slPoints,
+               0 //bp.tgrPrice
+            };
+            
+            sp = sell;
+            
+            
+            
+           
+            if(trade.SellStop(sp.lotSize, sp.openPrice, Symbol(), sp.slPrice, sp.tpPrice,0,0, NULL)){
+               Print(ARROW, "OPENED SELL STOP POSITION");
+               sp.openTime = TimeCurrent();
+            }
+      }
+
+      
+      return true;  
+   }
+   
+   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   
+   
+   static bool 
+   recursivePositionCall(position_t& buy, position_t& sell, double lotSize, uint iteration){
+   
+      if(trade.Buy(buy.lotSize, Symbol(), buy.openPrice, buy.slPrice, buy.tpPrice)){
+         buy.openTime = TimeCurrent();
+         
+         Print(ARROW, "OPENED BUY POSITION");
+      
+
+            
+            
+      
+         if(trade.SellStop(sp.lotSize, sp.openPrice, Symbol(), sp.slPrice, sp.tpPrice,0,0, NULL)){
+            Print(ARROW, "OPENED SELL STOP POSITION");
+            sp.openTime = TimeCurrent();
+         }
+      }
+   
+   
+   
+   
+   
+   
+   }
+   
+   
+   
+   
 
 
 
