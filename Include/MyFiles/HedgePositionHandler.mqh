@@ -72,7 +72,6 @@ public:
          bp.openTime = TimeCurrent();
       }
       
-         
     
       if(trade.Sell(sp.lotSize, Symbol(), sp.openPrice, sp.slPrice, sp.tpPrice)){
          //sp.orderId = trade.ResultOrder();
