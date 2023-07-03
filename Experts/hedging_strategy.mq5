@@ -72,7 +72,8 @@ void OnTick()
    
    bool longCondition = macdMain1 > macdSignal1 && 
                         macdMain0 < macdSignal0 &&
-                        PositionsTotal() == 0;
+                        PositionsTotal() == 0 &&
+                        OrdersTotal() == 0;
 
                         
    bool shortCondition = macdMain1 < macdSignal1 && 
