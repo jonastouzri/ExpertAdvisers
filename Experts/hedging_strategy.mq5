@@ -64,6 +64,7 @@ void OnTick()
    Comment(TimeCurrent());
    
    
+   
    double macdMain0 = Util::getMACD(LOOKBACK, 0, MAIN_LINE);
    double macdMain1 = Util::getMACD(LOOKBACK, 1, MAIN_LINE);
    double macdSignal0 = Util::getMACD(LOOKBACK, 0, SIGNAL_LINE);
@@ -88,6 +89,15 @@ void OnTick()
                         
       //todo: on each tick          
       //ph.modifyPosition();
+      
+      
+      
+   ph.updatePosition();
+      
+      
+      
+      
+      
 
 
 
